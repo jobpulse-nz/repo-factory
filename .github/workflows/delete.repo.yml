@@ -1,0 +1,77 @@
+name: Delete Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository_name:
+        description: "Name of the repository to delete (this operation cannot be undone)"
+        required: true
+
+      confirm_delete:
+        description: 'Type "yes" to confirm deletion of the repository. Any other value will skip deletion.'
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - "yes"
+          - "no"
+
+jobs:
+  delete-repo:
+    runs-on: ubuntu-latest
+    env:
+      PROTECTED_REPOS: "repo-factory" # add another-critical-repo comma separated
+
+    steps:
+      - name: Check protected repository
+        id: check-protected
+        run: |
+          IFS=',' read -ra PROTECTED <<< "${PROTECTED_REPOS}"
+          is_protected=false
+
+          for repo in "${PROTECTED[@]}"; do
+            repo_trimmed="$(echo "$repo" | xargs)" # trim spaces
+            if [ "$repo_trimmed" = "${{ inputs.repository_name }}" ]; then
+              is_protected=true
+              break
+            fi
+          done
+
+          if [ "$is_protected" = true ]; then
+            echo "Repository '${{ inputs.repository_name }}' is protected. Skipping deletion."
+            echo "protected=true" >> $GITHUB_OUTPUT
+          else
+            echo "protected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check confirmation
+        id: check-confirm
+        if: steps.check-protected.outputs.protected == 'false'
+        run: |
+          if [ "${{ inputs.confirm_delete }}" != "yes" ]; then
+            echo "Not confirmed, skipping deletion."
+            echo "confirmed=false" >> $GITHUB_OUTPUT
+          else
+            echo "confirmed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Delete Repository
+        if: steps.check-protected.outputs.protected == 'false' && steps.check-confirm.outputs.confirmed == 'true'
+        uses: actionsforge/actions-repo-ops@v1
+        env:
+          GH_REPO_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          GH_ORG_NAME: ${{ secrets.GH_ORG_NAME }}
+        with:
+          operation: delete
+          repository_name: ${{ inputs.repository_name }}
+
+      - name: Summary
+        if: always()
+        run: |
+          if [[ "${{ steps.check-protected.outputs.protected }}" == "true" ]]; then
+            echo "::notice::Repository '${{ inputs.repository_name }}' is protected and cannot be deleted"
+          elif [[ "${{ steps.check-confirm.outputs.confirmed }}" != "true" ]]; then
+            echo "::notice::Deletion was not confirmed"
+          else
+            echo "::notice::Repository '${{ inputs.repository_name }}' was deleted"
+          fi
