@@ -1,0 +1,383 @@
+name: Create Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository_name:
+        description: "Name of the repository to create"
+        required: true
+
+      repository_description:
+        description: "Description of the repository"
+        required: false
+        default: ""
+
+      private:
+        description: "Make repository private?"
+        required: false
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+      auto_init:
+        description: "Initialize with README?"
+        required: false
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+      gitignore_template:
+        description: "Gitignore template"
+        required: false
+        default: "None"
+        type: choice
+        options:
+          - AL
+          - Actionscript
+          - Ada
+          - Agda
+          - Android
+          - AppEngine
+          - AppceleratorTitanium
+          - ArchLinuxPackages
+          - Autotools
+          - Ballerina
+          - C
+          - C++
+          - CFWheels
+          - CMake
+          - CUDA
+          - CakePHP
+          - ChefCookbook
+          - Clojure
+          - CodeIgniter
+          - CommonLisp
+          - Composer
+          - Concrete5
+          - Coq
+          - CraftCMS
+          - D
+          - DM
+          - Dart
+          - Delphi
+          - Dotnet
+          - Drupal
+          - ECU-TEST
+          - EPiServer
+          - Eagle
+          - Elisp
+          - Elixir
+          - Elm
+          - Erlang
+          - ExpressionEngine
+          - ExtJs
+          - Fancy
+          - Finale
+          - Firebase
+          - FlaxEngine
+          - Flutter
+          - ForceDotCom
+          - Fortran
+          - FuelPHP
+          - GWT
+          - Gcov
+          - GitBook
+          - GitHubPages
+          - Go
+          - Godot
+          - Gradle
+          - Grails
+          - Haskell
+          - IAR
+          - IGORPro
+          - Idris
+          - JBoss
+          - JENKINS_HOME
+          - Java
+          - Jekyll
+          - Joomla
+          - Julia
+          - KiCad
+          - Kohana
+          - Kotlin
+          - LabVIEW
+          - Laravel
+          - Leiningen
+          - LemonStand
+          - Lilypond
+          - Lithium
+          - Lua
+          - Magento
+          - Maven
+          - Mercury
+          - MetaProgrammingSystem
+          - Modelica
+          - Nanoc
+          - Nim
+          - Node
+          - OCaml
+          - Objective-C
+          - Opa
+          - OpenCart
+          - OracleForms
+          - Packer
+          - Perl
+          - Phalcon
+          - PlayFramework
+          - Plone
+          - Prestashop
+          - Processing
+          - PureScript
+          - Python
+          - Qooxdoo
+          - Qt
+          - R
+          - ROS
+          - Racket
+          - Rails
+          - Raku
+          - ReScript
+          - RhodesRhomobile
+          - Ruby
+          - Rust
+          - SCons
+          - Sass
+          - Scala
+          - Scheme
+          - Scrivener
+          - Sdcc
+          - SeamGen
+          - SketchUp
+          - Smalltalk
+          - Stella
+          - SugarCRM
+          - Swift
+          - Symfony
+          - SymphonyCMS
+          - TeX
+          - Terraform
+          - Textpattern
+          - TurboGears2
+          - TwinCAT3
+          - Typo3
+          - Unity
+          - UnrealEngine
+          - VVVV
+          - VisualStudio
+          - Waf
+          - WordPress
+          - Xojo
+          - Yeoman
+          - Yii
+          - ZendFramework
+          - Zephir
+          - Zig
+          - None
+
+      license_template:
+        description: "License template"
+        required: false
+        default: "None"
+        type: choice
+        options:
+          - agpl-3.0
+          - apache-2.0
+          - bsd-2-clause
+          - bsd-3-clause
+          - bsl-1.0
+          - cc0-1.0
+          - epl-2.0
+          - gpl-2.0
+          - gpl-3.0
+          - lgpl-2.1
+          - mit
+          - mpl-2.0
+          - unlicense
+          - None
+
+      # homepage:
+      #   description: "Repository homepage URL"
+      #   required: false
+      #   default: ""
+
+      has_issues:
+        description: "Enable issues"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+      # has_projects:
+      #   description: "Enable projects"
+      #   required: false
+      #   default: "true"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # has_wiki:
+      #   description: "Enable wiki"
+      #   required: false
+      #   default: "true"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # has_discussions:
+      #   description: "Enable discussions"
+      #   required: false
+      #   default: "false"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # team_id:
+      #   description: "Team ID to grant access"
+      #   required: false
+      #   default: ""
+
+      # allow_squash_merge:
+      #   description: "Allow squash merging"
+      #   required: false
+      #   default: "true"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # allow_merge_commit:
+      #   description: "Allow merge commits"
+      #   required: false
+      #   default: "true"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # allow_rebase_merge:
+      #   description: "Allow rebase merging"
+      #   required: false
+      #   default: "true"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # allow_auto_merge:
+      #   description: "Allow auto-merge"
+      #   required: false
+      #   default: "false"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      delete_branch_on_merge:
+        description: "Delete branch after merge"
+        required: false
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+      # allow_update_branch:
+      #   description: "Allow branch updates"
+      #   required: false
+      #   default: "false"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      default_branch:
+        description: "Default branch name"
+        required: false
+        default: "main"
+
+      # use_squash_pr_title_as_default:
+      #   description: "Use PR title for squash merge"
+      #   required: false
+      #   default: "false"
+      #   type: choice
+      #   options: ["true", "false"]
+
+      # squash_merge_commit_title:
+      #   description: "Squash merge commit title"
+      #   required: false
+      #   default: "PR_TITLE"
+      #   type: choice
+      #   options:
+      #     - PR_TITLE
+      #     - COMMIT_OR_PR_TITLE
+      #     - BLANK
+
+      # squash_merge_commit_message:
+      #   description: "Squash merge commit message"
+      #   required: false
+      #   default: "PR_BODY"
+      #   type: choice
+      #   options:
+      #     - PR_BODY
+      #     - COMMIT_MESSAGES
+      #     - BLANK
+
+      # merge_commit_title:
+      #   description: "Merge commit title"
+      #   required: false
+      #   default: "PR_TITLE"
+      #   type: choice
+      #   options:
+      #     - PR_TITLE
+      #     - MERGE_MESSAGE
+      #     - BLANK
+
+      # merge_commit_message:
+      #   description: "Merge commit message"
+      #   required: false
+      #   default: "PR_BODY"
+      #   type: choice
+      #   options:
+      #     - PR_BODY
+      #     - PR_TITLE
+      #     - BLANK
+
+jobs:
+  create-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set optional fields
+        id: set-params
+        run: |
+          if [ "${{ inputs.gitignore_template }}" != "None" ]; then
+            echo "gitignore_template=${{ inputs.gitignore_template }}" >> $GITHUB_OUTPUT
+          fi
+          if [ "${{ inputs.license_template }}" != "None" ]; then
+            echo "license_template=${{ inputs.license_template }}" >> $GITHUB_OUTPUT
+          fi
+          # [ -n "${{ inputs.homepage }}" ] && echo "homepage=${{ inputs.homepage }}" >> $GITHUB_OUTPUT
+          # [ -n "${{ inputs.team_id }}" ] && echo "team_id=${{ inputs.team_id }}" >> $GITHUB_OUTPUT
+          [ -n "${{ inputs.default_branch }}" ] && echo "default_branch=${{ inputs.default_branch }}" >> $GITHUB_OUTPUT
+          # [ -n "${{ inputs.squash_merge_commit_title }}" ] && echo "squash_merge_commit_title=${{ inputs.squash_merge_commit_title }}" >> $GITHUB_OUTPUT
+          # [ -n "${{ inputs.squash_merge_commit_message }}" ] && echo "squash_merge_commit_message=${{ inputs.squash_merge_commit_message }}" >> $GITHUB_OUTPUT
+          # [ -n "${{ inputs.merge_commit_title }}" ] && echo "merge_commit_title=${{ inputs.merge_commit_title }}" >> $GITHUB_OUTPUT
+          # [ -n "${{ inputs.merge_commit_message }}" ] && echo "merge_commit_message=${{ inputs.merge_commit_message }}" >> $GITHUB_OUTPUT
+
+      - name: Create Repository
+        uses: actionsforge/actions-repo-ops@v1
+        env:
+          GH_REPO_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          GH_ORG_NAME: ${{ secrets.GH_ORG_NAME }}
+        with:
+          operation: create
+          repository_name: ${{ inputs.repository_name }}
+          description: ${{ inputs.repository_description }}
+          private: ${{ inputs.private }}
+          auto_init: ${{ inputs.auto_init }}
+          gitignore_template: ${{ steps.set-params.outputs.gitignore_template }}
+          license_template: ${{ steps.set-params.outputs.license_template }}
+          # homepage: ${{ steps.set-params.outputs.homepage }}
+          has_issues: ${{ inputs.has_issues }}
+          # has_projects: ${{ inputs.has_projects }}
+          # has_wiki: ${{ inputs.has_wiki }}
+          # has_discussions: ${{ inputs.has_discussions }}
+          # team_id: ${{ steps.set-params.outputs.team_id }}
+          # allow_squash_merge: ${{ inputs.allow_squash_merge }}
+          # allow_merge_commit: ${{ inputs.allow_merge_commit }}
+          # allow_rebase_merge: ${{ inputs.allow_rebase_merge }}
+          # allow_auto_merge: ${{ inputs.allow_auto_merge }}
+          delete_branch_on_merge: ${{ inputs.delete_branch_on_merge }}
+          # allow_update_branch: ${{ inputs.allow_update_branch }}
+          default_branch: ${{ steps.set-params.outputs.default_branch }}
+          # use_squash_pr_title_as_default: ${{ inputs.use_squash_pr_title_as_default }}
+          # squash_merge_commit_title: ${{ steps.set-params.outputs.squash_merge_commit_title }}
+          # squash_merge_commit_message: ${{ steps.set-params.outputs.squash_merge_commit_message }}
+          # merge_commit_title: ${{ steps.set-params.outputs.merge_commit_title }}
+          # merge_commit_message: ${{ steps.set-params.outputs.merge_commit_message }}
